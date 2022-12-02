@@ -17,6 +17,7 @@ Console.WriteLine($"Answer: {answer}");
 // Change object? to whatever is needed
 static object? GetEntry(StreamReader streamReader)
 {
+    //var character = (char)streamReader.Read();
     var line = streamReader.ReadLine() ?? "";
 
     //TODO: Parse the line
