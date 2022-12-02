@@ -17,4 +17,4 @@ This should be the data stored in the secrets file:
 }
 ```
 
-You can get the cookie value by going to your browser's Developer Console on https://adventofcode.com, locating cookies, and copying the value of the cookie with the name `session`.
+You can get the cookie value by going to your browser's Developer Console on https://adventofcode.com, locating cookies, and copying the value of the cookie with the name `session`. It looks like the cookie is good for ~1 year, so you shouldn't have to worry about doing this more than once (per year).
