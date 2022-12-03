@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Utility;
-
 public static class InputUtility<TProgram>
 {
     public static async Task<FileStream> GetInputStream(int day)

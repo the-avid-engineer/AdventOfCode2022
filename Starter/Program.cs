@@ -1,6 +1,4 @@
-﻿using Utility;
-
-await SolverUtility<Program>.LogSolution(
+﻿await SolverUtility<Program>.LogSolution(
     0, //TODO: Set day
 
     "Answer Not Set", //TODO: Set initial answer

@@ -1,6 +1,4 @@
-﻿namespace Utility;
-
-public static class SolverUtility<TProgram>
+﻿public static class SolverUtility<TProgram>
 {
     public static async Task LogSolution<TAnswer, TEntry>
     (
