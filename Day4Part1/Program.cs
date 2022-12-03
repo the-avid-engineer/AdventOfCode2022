@@ -1,5 +1,5 @@
 ﻿await SolverUtility<Program>.LogSolution(
-    0, //TODO: Set day
+    4,
 
     "Answer Not Set", //TODO: Set initial answer
 
