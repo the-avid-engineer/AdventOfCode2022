@@ -1,28 +1,42 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 
 using var file = await GetInputStream(3);
 using var fileReader = new StreamReader(file);
 
-object answer = "Answer Not Set";
+var groups = new List<Group>()
+{ new Group() };
 
 while (!fileReader.EndOfStream)
 {
     var entry = GetEntry(fileReader);
 
-    //TODO: Process the entry
+    var lastGroup = groups.Last();
+
+    if (lastGroup.Rucksacks.Count == 3)
+    {
+        lastGroup = new Group();
+
+        groups.Add(lastGroup);
+    }
+
+    lastGroup.Rucksacks.Add(entry);
+}
+
+var answer = 0;
+
+foreach (var group in groups)
+{
+    answer += group.GetPriority();
 }
 
 Console.WriteLine($"Answer: {answer}");
 
-// Change object? to whatever is needed
-static object? GetEntry(StreamReader streamReader)
+static string GetEntry(StreamReader streamReader)
 {
-    //var character = (char)streamReader.Read();
     var line = streamReader.ReadLine() ?? "";
 
-    //TODO: Parse the line
-
-    return default;
+    return line;
 }
 
 static async Task<FileStream> GetInputStream(int day)
@@ -57,4 +71,28 @@ static async Task<FileStream> GetInputStream(int day)
     file.Seek(0, SeekOrigin.Begin);
 
     return file;
+}
+
+public class Group
+{
+    public List<string> Rucksacks { get; init; } = new();
+
+    public int GetPriority()
+    {
+        var @char = GetChar();
+
+        if ($"{@char}" == $"{@char}".ToLowerInvariant())
+        {
+            return (@char - 'a') + 1;
+        }
+        else
+        {
+            return (@char - 'A') + 1 + 26;
+        }
+    }
+
+    private char GetChar()
+    {
+        return Rucksacks[0].Intersect(Rucksacks[1]).Intersect(Rucksacks[2]).Single();
+    }
 }
