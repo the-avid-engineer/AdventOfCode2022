@@ -1,26 +1,22 @@
 ﻿using Utility;
 
-using var file = await InputUtility<Program>.GetInputStream(0);
-using var fileReader = new StreamReader(file);
+await SolverUtility<Program>.LogSolution(
+    0, //TODO: Set day
 
-object answer = "Answer Not Set";
+    "Answer Not Set", //TODO: Set initial answer
 
-while (!fileReader.EndOfStream)
-{
-    var entry = GetEntry(fileReader);
+    (fileReader) => {
+        //TODO: Read an entry from the file
 
-    //TODO: Process the entry
-}
+        var line = fileReader.ReadLine() ?? "";
+        //var character = (char)streamReader.Read();
 
-Console.WriteLine($"Answer: {answer}");
+        return default(object?);
+    },
 
-// Change object? to whatever is needed
-static object? GetEntry(StreamReader streamReader)
-{
-    //var character = (char)streamReader.Read();
-    var line = streamReader.ReadLine() ?? "";
+    (previousAnswer, entry) => {
+        //TODO: Process the entry
 
-    //TODO: Parse the line
-
-    return default;
-}
+        return previousAnswer;
+    }
+);
