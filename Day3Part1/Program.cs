@@ -3,26 +3,46 @@
 using var file = await GetInputStream(3);
 using var fileReader = new StreamReader(file);
 
-object answer = "Answer Not Set";
+int answer = 0;
 
 while (!fileReader.EndOfStream)
 {
     var entry = GetEntry(fileReader);
 
-    //TODO: Process the entry
+    var first = entry[..(entry.Length / 2)];
+
+    var second = entry[(entry.Length / 2)..];
+
+    foreach (var @char in first)
+    {
+        if (second.IndexOf(@char) > -1)
+        {
+            int x;
+
+            if ($"{@char}" == $"{@char}".ToLowerInvariant())
+            {
+                x = (@char - 'a') + 1;
+            }
+            else
+            {
+                x = (@char - 'A') + 1 + 26;
+            }
+
+            Console.WriteLine($"{@char}: {x}");
+
+            answer += x;
+            break;
+        }
+    }
 }
 
 Console.WriteLine($"Answer: {answer}");
 
-// Change object? to whatever is needed
-static object? GetEntry(StreamReader streamReader)
+static string GetEntry(StreamReader streamReader)
 {
-    //var character = (char)streamReader.Read();
     var line = streamReader.ReadLine() ?? "";
 
-    //TODO: Parse the line
-
-    return default;
+    return line;
 }
 
 static async Task<FileStream> GetInputStream(int day)
