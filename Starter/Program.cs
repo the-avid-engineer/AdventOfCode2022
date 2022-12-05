@@ -1,4 +1,4 @@
-﻿await SolverUtility<Program>.LogSolution(
+﻿await SolverUtility<Program>.LogAnswer(
     0, //TODO: Set day
 
     new StateTypeA(),

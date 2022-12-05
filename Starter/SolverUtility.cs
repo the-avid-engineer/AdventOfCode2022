@@ -1,6 +1,6 @@
 ﻿public static class SolverUtility<TProgram>
 {
-    public static async Task LogSolution
+    public static async Task LogAnswer
     (
         int day,
         IState initialState,
