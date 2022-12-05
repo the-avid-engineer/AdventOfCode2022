@@ -1,33 +1,35 @@
 ﻿await SolverUtility<Program>.LogSolution(
-    5, //TODO: Set day
+    0, //TODO: Set day
 
-    new InitialState(),
+    new StateTypeA(),
 
     (fileReader) => {
         var line = fileReader.ReadLine() ?? "";
         //var character = (char)streamReader.Read();
 
         //TODO: Parse the line into an instruction
-        return DoNothing.Instance;
+        return new InstructionTypeA();
     }
 );
 
-public class InitialState : IState
-{
-    public string ToAnswer() => "Answer Not Set";
-}
-
-public class Instruction1 : IInstruction
+//TODO: Define Instructions
+public class InstructionTypeA : IInstruction
 {
     public IState Reduce(IState state)
     {
         switch (state)
         {
-            case InitialState initialState:
-                return state;
+            case StateTypeA stateTypeA:
+                throw new NotImplementedException();
 
             default:
                 throw new NotImplementedException();
         }
     }
+}
+
+//TODO: Define States
+public class StateTypeA : IState
+{
+    public string ToAnswer() => "Answer Not Set";
 }
