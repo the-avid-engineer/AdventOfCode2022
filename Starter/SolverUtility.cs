@@ -1,25 +1,22 @@
 ﻿public static class SolverUtility<TProgram>
 {
-    public static async Task LogSolution<TAnswer, TEntry>
+    public static async Task LogSolution
     (
         int day,
-        TAnswer initialAnswer,
-        Func<StreamReader, TEntry> getNextEntry,
-        Func<TAnswer, TEntry, TAnswer> getNextAnswer
+        IState initialState,
+        Func<StreamReader, IInstruction> getNextInstruction
     )
     {
         using var file = await InputUtility<TProgram>.GetInputStream(day);
         using var fileReader = new StreamReader(file);
 
-        var answer = initialAnswer;
+        var state = initialState;
 
         while (!fileReader.EndOfStream)
         {
-            var entry = getNextEntry.Invoke(fileReader);
-
-            answer = getNextAnswer(answer, entry);
+            state = getNextInstruction.Invoke(fileReader).Reduce(state);
         }
 
-        Console.WriteLine($"Answer: {answer}");
+        Console.WriteLine($"Answer: {state.ToAnswer()}");
     }
 }
