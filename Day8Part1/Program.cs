@@ -97,24 +97,32 @@ public class Forest : IState
         {
             if (rowNum == 0)
             {
+                Console.WriteLine($"   Top Edge: [{rowNum},{colNum}]");
+
                 visibleTreeCoordinates.Add((rowNum, colNum));
 
                 Search(rowNum, colNum, rowNum, colNum, +1, 0);
             }
-            else if (colNum == 0)
-            {
-                visibleTreeCoordinates.Add((rowNum, colNum));
-
-                Search(rowNum, colNum, rowNum, colNum, 0, +1);
-            }
             else if (rowNum == length - 1)
             {
+                Console.WriteLine($"Bottom Edge: [{rowNum},{colNum}]");
+
                 visibleTreeCoordinates.Add((rowNum, colNum));
 
                 Search(rowNum, colNum, rowNum, colNum, -1, 0);
             }
+            else if (colNum == 0)
+            {
+                Console.WriteLine($"  Left Edge: [{rowNum},{colNum}]");
+
+                visibleTreeCoordinates.Add((rowNum, colNum));
+
+                Search(rowNum, colNum, rowNum, colNum, 0, +1);
+            }
             else if (colNum == width - 1)
             {
+                Console.WriteLine($" Right Edge: [{rowNum},{colNum}]");
+
                 visibleTreeCoordinates.Add((rowNum, colNum));
 
                 Search(rowNum, colNum, rowNum, colNum, 0, -1);
