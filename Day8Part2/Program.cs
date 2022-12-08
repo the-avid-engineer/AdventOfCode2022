@@ -15,7 +15,7 @@ await SolverUtility<Program>.LogAnswer(
 
         return new AddTreeRow
         {
-            Heights = line
+            Trees = line
                 .ToCharArray()
                 .Select(@char => @char - '0')
                 .ToArray()
@@ -30,7 +30,7 @@ public class DoNothing : IInstruction
 
 public class AddTreeRow : IInstruction
 {
-    public required int[] Heights { get; init; }
+    public required int[] Trees { get; init; }
 
     public IState Reduce(IState previousState)
     {
@@ -39,7 +39,14 @@ public class AddTreeRow : IInstruction
             throw new UnreachableException();
         }
 
-        forest.TreeRows.Add(Heights);
+        if (!forest.Width.HasValue)
+        {
+            forest.Width = Trees.Length;
+        }
+
+        forest.Length += 1;
+
+        forest.Trees.AddRange(Trees);
 
         return forest;
     }
@@ -47,72 +54,75 @@ public class AddTreeRow : IInstruction
 
 public class Forest : IState
 {
-    public List<int[]> TreeRows { get; init; } = new();
+    public int? Width { get; set; }
+    public int Length { get; set; }
+    public List<int> Trees { get; init; } = new();
 
     public string ToAnswer()
     {
-        var numRows = TreeRows.Count;
-        var numCols = TreeRows.First().Length;
+        var length = Length;
+        var width = Width ?? throw new UnreachableException();
 
-        void Search(ref int blockedAtCount, int originalRowNum, int originalColNum, int rowNum, int colNum, int rowNumDelta, int colNumDelta)
+        void Search(ref int blockedAtCount, int originalRowNum, int originalColNum, int rowNumDelta, int colNumDelta)
         {
-            var compareRowNum = rowNum + rowNumDelta;
-            var compareColNum = colNum + colNumDelta;
+            var originalHeight = Trees[width * originalRowNum + originalColNum];
 
-            if (compareRowNum < 0 || compareRowNum == numRows || compareColNum < 0 || compareColNum == numCols)
+            var checkRowNum = originalRowNum + rowNumDelta;
+            var checkColNum = originalColNum + colNumDelta;
+
+            while (checkRowNum >= 0 && checkRowNum < length && checkColNum >= 0 && checkColNum < width)
             {
-                return;
+                blockedAtCount += 1;
+
+                var checkHeight = Trees[width * checkRowNum + checkColNum];
+
+                if (checkHeight >= originalHeight)
+                {
+                    return;
+                }
+
+                checkRowNum += rowNumDelta;
+                checkColNum += colNumDelta;
             }
-
-            blockedAtCount += 1;
-
-            var compareHeight = TreeRows[compareRowNum][compareColNum];
-            var height = TreeRows[originalRowNum][originalColNum];
-
-            if (compareHeight >= height)
-            {
-                return;
-            }
-
-            Search(ref blockedAtCount, originalRowNum, originalColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
         }
 
         int GetScore(int rowNum, int colNum)
         {
             var upBlockedAt = 0;
-
-            Search(ref upBlockedAt, rowNum, colNum, rowNum, colNum, -1, 0);
-
             var downBlockedAt = 0;
-
-            Search(ref downBlockedAt, rowNum, colNum, rowNum, colNum, +1, 0);
-
             var leftBlockedAt = 0;
-
-            Search(ref leftBlockedAt, rowNum, colNum, rowNum, colNum, 0, -1);
-
             var rightBlockedAt = 0;
 
-            Search(ref rightBlockedAt, rowNum, colNum, rowNum, colNum, 0, +1);
+            Search(ref upBlockedAt, rowNum, colNum, -1, 0);
+            Search(ref downBlockedAt, rowNum, colNum, +1, 0);
+            Search(ref leftBlockedAt, rowNum, colNum, 0, -1);
+            Search(ref rightBlockedAt, rowNum, colNum, 0, +1);
 
             return upBlockedAt * leftBlockedAt * downBlockedAt * rightBlockedAt;
         }
 
+        var rowNum = 0;
+        var colNum = 0;
+
         var bestScore = 0;
 
-        for (var rowNum = 0; rowNum < numRows; rowNum++)
+        foreach (var tree in Trees)
         {
-            for (var colNum = 0; colNum < numCols; colNum++)
-            {
-                var score = GetScore(rowNum, colNum);
+            var score = GetScore(rowNum, colNum);
 
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                }
+            if (score > bestScore)
+            {
+                bestScore = score;
+            }
+
+            colNum += 1;
+
+            if (colNum == width)
+            {
+                colNum = 0;
+                rowNum += 1;
             }
         }
-
 
         return bestScore.ToString();
     }
