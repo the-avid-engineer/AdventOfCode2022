@@ -49,16 +49,6 @@ public class Forest : IState
 {
     public List<int[]> TreeRows { get; init; } = new();
 
-    public enum Visibility
-    {
-        LeftVisible,
-        LeftLevel,
-        LeftHidden,
-
-        RightVisible,
-
-    }
-
     public string ToAnswer()
     {
         var numRows = TreeRows.Count;
