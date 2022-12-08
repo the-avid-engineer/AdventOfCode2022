@@ -67,27 +67,30 @@ public class Forest : IState
 
         void Search(int highestRowNum, int highestColNum, int rowNum, int colNum, int rowNumDelta, int colNumDelta)
         {
-            var compareRowNum = rowNum + rowNumDelta;
-            var compareColNum = colNum + colNumDelta;
-
-            if (compareRowNum < 0 || compareRowNum == length || compareColNum < 0 || compareColNum == width)
+            while (true)
             {
-                return;
+                var compareRowNum = rowNum + rowNumDelta;
+                var compareColNum = colNum + colNumDelta;
+
+                if (compareRowNum < 0 || compareRowNum == length || compareColNum < 0 || compareColNum == width)
+                {
+                    return;
+                }
+
+                var compareHeight = Trees[width * compareRowNum + compareColNum];
+                var highestHeight = Trees[width * highestRowNum + highestColNum];
+
+                if (compareHeight > highestHeight)
+                {
+                    visibleTreeCoordinates.Add((compareRowNum, compareColNum));
+
+                    highestRowNum = compareRowNum;
+                    highestColNum = compareColNum;
+                }
+
+                rowNum = compareRowNum;
+                colNum = compareColNum;
             }
-
-            var compareHeight = Trees[width * compareRowNum + compareColNum];
-            var highestHeight = Trees[width * highestRowNum + highestColNum];
-
-            if (compareHeight > highestHeight)
-            {
-                visibleTreeCoordinates.Add((compareRowNum, compareColNum));
-
-                Search(compareRowNum, compareColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
-
-                return;
-            }
-
-            Search(highestRowNum, highestColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
         }
 
         const int topEdgeRowNum = 0;
