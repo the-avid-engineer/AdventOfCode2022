@@ -63,8 +63,10 @@ public class Forest : IState
         var length = Length;
         var width = Width ?? throw new UnreachableException();
 
-        void Search(ref int blockedAtCount, int originRowNum, int originColNum, int rowNumDelta, int colNumDelta)
+        int Search(int originRowNum, int originColNum, int rowNumDelta, int colNumDelta)
         {
+            var blockedAt = 0;
+
             var originHeight = Trees[width * originRowNum + originColNum];
 
             var checkRowNum = originRowNum + rowNumDelta;
@@ -72,33 +74,20 @@ public class Forest : IState
 
             while (checkRowNum >= 0 && checkRowNum < length && checkColNum >= 0 && checkColNum < width)
             {
-                blockedAtCount += 1;
+                blockedAt += 1;
 
                 var checkHeight = Trees[width * checkRowNum + checkColNum];
 
                 if (checkHeight >= originHeight)
                 {
-                    return;
+                    break;
                 }
 
                 checkRowNum += rowNumDelta;
                 checkColNum += colNumDelta;
             }
-        }
 
-        int GetScore(int rowNum, int colNum)
-        {
-            var upBlockedAt = 0;
-            var downBlockedAt = 0;
-            var leftBlockedAt = 0;
-            var rightBlockedAt = 0;
-
-            Search(ref upBlockedAt, rowNum, colNum, -1, 0);
-            Search(ref downBlockedAt, rowNum, colNum, +1, 0);
-            Search(ref leftBlockedAt, rowNum, colNum, 0, -1);
-            Search(ref rightBlockedAt, rowNum, colNum, 0, +1);
-
-            return upBlockedAt * leftBlockedAt * downBlockedAt * rightBlockedAt;
+            return blockedAt;
         }
 
         var rowNum = 0;
@@ -108,7 +97,11 @@ public class Forest : IState
 
         foreach (var tree in Trees)
         {
-            var score = GetScore(rowNum, colNum);
+            var score =
+                Search(rowNum, colNum, -1, 0) *
+                Search(rowNum, colNum, +1, 0) *
+                Search(rowNum, colNum, 0, -1) *
+                Search(rowNum, colNum, 0, +1);
 
             if (score > bestScore)
             {
