@@ -54,14 +54,32 @@ public class Forest : IState
         var numRows = TreeRows.Count;
         var numCols = TreeRows.First().Length;
 
-        var rowHighestLeftToRight = new Dictionary<int, int>();
-        var rowHighestRightToLeft = new Dictionary<int, int>();
-        var colHighestTopToBottom = new Dictionary<int, int>();
-        var colHighestBottomToTop = new Dictionary<int, int>();
+        var visibleTreeCoordinates = new HashSet<(int, int)>();
 
-        var visibilityGraph = new Dictionary<(int, int), bool>();
+        void Search(int highestRowNum, int highestColNum, int rowNum, int colNum, int rowNumDelta, int colNumDelta)
+        {
+            var compareRowNum = rowNum + rowNumDelta;
+            var compareColNum = colNum + colNumDelta;
 
-        // Initialize
+            if (compareRowNum < 0 || compareRowNum == numRows || compareColNum < 0 || compareColNum == numCols)
+            {
+                return;
+            }
+
+            var compareHeight = TreeRows[compareRowNum][compareColNum];
+            var highestHeight = TreeRows[highestRowNum][highestColNum];
+
+            if (compareHeight > highestHeight)
+            {
+                visibleTreeCoordinates.Add((compareRowNum, compareColNum));
+
+                Search(compareRowNum, compareColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
+
+                return;
+            }
+
+            Search(highestRowNum, highestColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
+        }
 
         for (var rowNum = 0; rowNum < numRows; rowNum++)
         {
@@ -74,88 +92,34 @@ public class Forest : IState
 
                 var coordinate = (rowNum, colNum);
 
-                if (isLeftEdge || isTopEdge || isRightEdge || isBottomEdge)
-                {
-                    visibilityGraph.Add(coordinate, true);
-                }
-                else
-                {
-                    visibilityGraph.Add(coordinate, false);
-                }
-
-                var height = TreeRows[rowNum][colNum];
-
-                if (isLeftEdge)
-                {
-                    rowHighestLeftToRight[rowNum] = height;
-                }
-
-                if (isRightEdge)
-                {
-                    rowHighestRightToLeft[rowNum] = height;
-                }
-
                 if (isTopEdge)
                 {
-                    colHighestTopToBottom[colNum] = height;
-                }
+                    visibleTreeCoordinates.Add(coordinate);
 
-                if (isBottomEdge)
+                    Search(rowNum, colNum, rowNum, colNum, +1, 0);
+                }
+                else if (isLeftEdge)
                 {
-                    colHighestBottomToTop[colNum] = height;
+                    visibleTreeCoordinates.Add(coordinate);
+
+                    Search(rowNum, colNum, rowNum, colNum, 0, +1);
+                }
+                else if (isBottomEdge)
+                {
+                    visibleTreeCoordinates.Add(coordinate);
+
+                    Search(rowNum, colNum, rowNum, colNum, -1, 0);
+                }
+                else if (isRightEdge)
+                {
+                    visibleTreeCoordinates.Add(coordinate);
+
+                    Search(rowNum, colNum, rowNum, colNum, 0, -1);
                 }
             }
         }
 
-        // Scan Top To Bottom, Left To Right, Update Highest
-
-        for (var rowNum = 1; rowNum <= numRows - 2; rowNum++)
-        {
-            for (var colNum = 1; colNum <= numCols - 2; colNum++)
-            {
-                var coordinate = (rowNum, colNum);
-                var height = TreeRows[rowNum][colNum];
-
-                if (height > rowHighestLeftToRight[rowNum])
-                {
-                    visibilityGraph[coordinate] = true;
-                    rowHighestLeftToRight[rowNum] = height;
-                }
-
-                if (height > colHighestTopToBottom[colNum])
-                {
-                    visibilityGraph[coordinate] = true;
-                    colHighestTopToBottom[colNum] = height;
-                }
-            }
-        }
-
-        // Scan Bottom To Top, Right To Left, Update Highest
-
-        for (var rowNum = numRows - 2; rowNum >= 1; rowNum--)
-        {
-            for (var colNum = numCols - 2; colNum >= 1; colNum--)
-            {
-                var coordinate = (rowNum, colNum);
-                var height = TreeRows[rowNum][colNum];
-
-                if (height > rowHighestRightToLeft[rowNum])
-                {
-                    visibilityGraph[coordinate] = true;
-                    rowHighestRightToLeft[rowNum] = height;
-                }
-
-                if (height > colHighestBottomToTop[colNum])
-                {
-                    visibilityGraph[coordinate] = true;
-                    colHighestBottomToTop[colNum] = height;
-                }
-            }
-        }
-
-        return visibilityGraph
-            .Select(pair => pair.Value)
-            .Where(visible => visible)
+        return visibleTreeCoordinates
             .Count()
             .ToString();
     }
