@@ -63,12 +63,12 @@ public class Forest : IState
         var length = Length;
         var width = Width ?? throw new UnreachableException();
 
-        void Search(ref int blockedAtCount, int originalRowNum, int originalColNum, int rowNumDelta, int colNumDelta)
+        void Search(ref int blockedAtCount, int originRowNum, int originColNum, int rowNumDelta, int colNumDelta)
         {
-            var originalHeight = Trees[width * originalRowNum + originalColNum];
+            var originHeight = Trees[width * originRowNum + originColNum];
 
-            var checkRowNum = originalRowNum + rowNumDelta;
-            var checkColNum = originalColNum + colNumDelta;
+            var checkRowNum = originRowNum + rowNumDelta;
+            var checkColNum = originColNum + colNumDelta;
 
             while (checkRowNum >= 0 && checkRowNum < length && checkColNum >= 0 && checkColNum < width)
             {
@@ -76,7 +76,7 @@ public class Forest : IState
 
                 var checkHeight = Trees[width * checkRowNum + checkColNum];
 
-                if (checkHeight >= originalHeight)
+                if (checkHeight >= originHeight)
                 {
                     return;
                 }
