@@ -96,38 +96,22 @@ public class Forest : IState
 
         foreach (var colNum in Enumerable.Range(0, width))
         {
-            // Top Edge
-
             visibleTreeCoordinates.Add((topEdgeRowNum, colNum));
-
-            Search(topEdgeRowNum, colNum, +1, 0);
-
-
-            // Bottom Edge
-
             visibleTreeCoordinates.Add((bottomEdgeRowNum, colNum));
 
+            Search(topEdgeRowNum, colNum, +1, 0);
             Search(bottomEdgeRowNum, colNum, -1, 0);
         }
 
         foreach (var rowNum in Enumerable.Range(1, length - 2))
         {
-            // Left Edge
-
             visibleTreeCoordinates.Add((rowNum, leftEdgeColNum));
-
-            Search(rowNum, leftEdgeColNum, 0, +1);
-
-
-            // Right Edge
-
             visibleTreeCoordinates.Add((rowNum, rightEdgeColNum));
 
+            Search(rowNum, leftEdgeColNum, 0, +1);
             Search(rowNum, rightEdgeColNum, 0, -1);
         }
 
-        return visibleTreeCoordinates
-            .Count()
-            .ToString();
+        return visibleTreeCoordinates.Count.ToString();
     }
 }
