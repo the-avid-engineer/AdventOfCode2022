@@ -13,9 +13,9 @@ await SolverUtility<Program>.LogAnswer(
             return new DoNothing();
         }
 
-        return new AddTreeRow
+        return new AddTrees
         {
-            Heights = line
+            Trees = line
                 .ToCharArray()
                 .Select(@char => @char - '0')
                 .ToArray()
@@ -28,9 +28,9 @@ public class DoNothing : IInstruction
     public IState Reduce(IState state) => state;
 }
 
-public class AddTreeRow : IInstruction
+public class AddTrees : IInstruction
 {
-    public required int[] Heights { get; init; }
+    public required int[] Trees { get; init; }
 
     public IState Reduce(IState previousState)
     {
@@ -39,7 +39,14 @@ public class AddTreeRow : IInstruction
             throw new UnreachableException();
         }
 
-        forest.TreeRows.Add(Heights);
+        if (!forest.Width.HasValue)
+        {
+            forest.Width = Trees.Length;
+        }
+
+        forest.Length += 1;
+
+        forest.Trees.AddRange(Trees);
 
         return forest;
     }
@@ -47,12 +54,14 @@ public class AddTreeRow : IInstruction
 
 public class Forest : IState
 {
-    public List<int[]> TreeRows { get; init; } = new();
+    public int? Width { get; set; }
+    public int Length { get; set; }
+    public List<int> Trees { get; init; } = new();
 
     public string ToAnswer()
     {
-        var numRows = TreeRows.Count;
-        var numCols = TreeRows.First().Length;
+        var length = Length;
+        var width = Width ?? throw new UnreachableException();
 
         var visibleTreeCoordinates = new HashSet<(int, int)>();
 
@@ -61,13 +70,13 @@ public class Forest : IState
             var compareRowNum = rowNum + rowNumDelta;
             var compareColNum = colNum + colNumDelta;
 
-            if (compareRowNum < 0 || compareRowNum == numRows || compareColNum < 0 || compareColNum == numCols)
+            if (compareRowNum < 0 || compareRowNum == length || compareColNum < 0 || compareColNum == width)
             {
                 return;
             }
 
-            var compareHeight = TreeRows[compareRowNum][compareColNum];
-            var highestHeight = TreeRows[highestRowNum][highestColNum];
+            var compareHeight = Trees[width * compareRowNum + compareColNum];
+            var highestHeight = Trees[width * highestRowNum + highestColNum];
 
             if (compareHeight > highestHeight)
             {
@@ -81,41 +90,42 @@ public class Forest : IState
             Search(highestRowNum, highestColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
         }
 
-        for (var rowNum = 0; rowNum < numRows; rowNum++)
+        int rowNum = 0;
+        int colNum = 0;
+
+        foreach (var tree in Trees)
         {
-            for (var colNum = 0; colNum < numCols; colNum++)
+            if (rowNum == 0)
             {
-                var isLeftEdge = colNum == 0;
-                var isTopEdge = rowNum == 0;
-                var isRightEdge = colNum == numCols - 1;
-                var isBottomEdge = rowNum == numRows - 1;
+                visibleTreeCoordinates.Add((rowNum, colNum));
 
-                var coordinate = (rowNum, colNum);
+                Search(rowNum, colNum, rowNum, colNum, +1, 0);
+            }
+            else if (colNum == 0)
+            {
+                visibleTreeCoordinates.Add((rowNum, colNum));
 
-                if (isTopEdge)
-                {
-                    visibleTreeCoordinates.Add(coordinate);
+                Search(rowNum, colNum, rowNum, colNum, 0, +1);
+            }
+            else if (rowNum == length - 1)
+            {
+                visibleTreeCoordinates.Add((rowNum, colNum));
 
-                    Search(rowNum, colNum, rowNum, colNum, +1, 0);
-                }
-                else if (isLeftEdge)
-                {
-                    visibleTreeCoordinates.Add(coordinate);
+                Search(rowNum, colNum, rowNum, colNum, -1, 0);
+            }
+            else if (colNum == width - 1)
+            {
+                visibleTreeCoordinates.Add((rowNum, colNum));
 
-                    Search(rowNum, colNum, rowNum, colNum, 0, +1);
-                }
-                else if (isBottomEdge)
-                {
-                    visibleTreeCoordinates.Add(coordinate);
+                Search(rowNum, colNum, rowNum, colNum, 0, -1);
+            }
 
-                    Search(rowNum, colNum, rowNum, colNum, -1, 0);
-                }
-                else if (isRightEdge)
-                {
-                    visibleTreeCoordinates.Add(coordinate);
+            colNum += 1;
 
-                    Search(rowNum, colNum, rowNum, colNum, 0, -1);
-                }
+            if (colNum == width)
+            {
+                colNum = 0;
+                rowNum += 1;
             }
         }
 
