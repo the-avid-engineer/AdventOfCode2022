@@ -72,10 +72,10 @@ public class Forest : IState
 
             while (checkRowNum >= 0 && checkRowNum < length && checkColNum >= 0 && checkColNum < width)
             {
-                var compareHeight = Trees[width * checkRowNum + checkColNum];
+                var checkHeight = Trees[width * checkRowNum + checkColNum];
                 var highestHeight = Trees[width * highestRowNum + highestColNum];
 
-                if (compareHeight > highestHeight)
+                if (checkHeight > highestHeight)
                 {
                     visibleTreeCoordinates.Add((checkRowNum, checkColNum));
 
