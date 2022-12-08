@@ -65,12 +65,15 @@ public class Forest : IState
 
         var visibleTreeCoordinates = new HashSet<(int, int)>();
 
-        void Search(int highestRowNum, int highestColNum, int rowNum, int colNum, int rowNumDelta, int colNumDelta)
+        void Search(int highestRowNum, int highestColNum, int rowNumDelta, int colNumDelta)
         {
+            int compareRowNum = highestRowNum;
+            int compareColNum = highestColNum;
+
             while (true)
             {
-                var compareRowNum = rowNum + rowNumDelta;
-                var compareColNum = colNum + colNumDelta;
+                compareRowNum += rowNumDelta;
+                compareColNum += colNumDelta;
 
                 if (compareRowNum < 0 || compareRowNum == length || compareColNum < 0 || compareColNum == width)
                 {
@@ -87,9 +90,6 @@ public class Forest : IState
                     highestRowNum = compareRowNum;
                     highestColNum = compareColNum;
                 }
-
-                rowNum = compareRowNum;
-                colNum = compareColNum;
             }
         }
 
@@ -105,14 +105,14 @@ public class Forest : IState
 
             visibleTreeCoordinates.Add((topEdgeRowNum, colNum));
 
-            Search(topEdgeRowNum, colNum, topEdgeRowNum, colNum, +1, 0);
+            Search(topEdgeRowNum, colNum, +1, 0);
 
 
             // Bottom Edge
 
-            Search(bottomEdgeRowNum, colNum, bottomEdgeRowNum, colNum, -1, 0);
-
             visibleTreeCoordinates.Add((bottomEdgeRowNum, colNum));
+
+            Search(bottomEdgeRowNum, colNum, -1, 0);
         }
 
         foreach (var rowNum in Enumerable.Range(1, length - 2))
@@ -121,14 +121,14 @@ public class Forest : IState
 
             visibleTreeCoordinates.Add((rowNum, leftEdgeColNum));
 
-            Search(rowNum, leftEdgeColNum, rowNum, leftEdgeColNum, 0, +1);
+            Search(rowNum, leftEdgeColNum, 0, +1);
 
 
             // Right Edge
 
             visibleTreeCoordinates.Add((rowNum, rightEdgeColNum));
 
-            Search(rowNum, rightEdgeColNum, rowNum, rightEdgeColNum, 0, -1);
+            Search(rowNum, rightEdgeColNum, 0, -1);
         }
 
         return visibleTreeCoordinates
