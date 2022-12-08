@@ -67,29 +67,24 @@ public class Forest : IState
 
         void Search(int highestRowNum, int highestColNum, int rowNumDelta, int colNumDelta)
         {
-            int compareRowNum = highestRowNum;
-            int compareColNum = highestColNum;
+            var checkRowNum = highestRowNum + rowNumDelta;
+            var checkColNum = highestColNum + colNumDelta;
 
-            while (true)
+            while (checkRowNum >= 0 && checkRowNum < length && checkColNum >= 0 && checkColNum < width)
             {
-                compareRowNum += rowNumDelta;
-                compareColNum += colNumDelta;
-
-                if (compareRowNum < 0 || compareRowNum == length || compareColNum < 0 || compareColNum == width)
-                {
-                    return;
-                }
-
-                var compareHeight = Trees[width * compareRowNum + compareColNum];
+                var compareHeight = Trees[width * checkRowNum + checkColNum];
                 var highestHeight = Trees[width * highestRowNum + highestColNum];
 
                 if (compareHeight > highestHeight)
                 {
-                    visibleTreeCoordinates.Add((compareRowNum, compareColNum));
+                    visibleTreeCoordinates.Add((checkRowNum, checkColNum));
 
-                    highestRowNum = compareRowNum;
-                    highestColNum = compareColNum;
+                    highestRowNum = checkRowNum;
+                    highestColNum = checkColNum;
                 }
+
+                checkRowNum += rowNumDelta;
+                checkColNum += colNumDelta;
             }
         }
 
