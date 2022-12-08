@@ -13,7 +13,7 @@ await SolverUtility<Program>.LogAnswer(
             return new DoNothing();
         }
 
-        return new AddTreeRow
+        return new AddTrees
         {
             Trees = line
                 .ToCharArray()
@@ -28,7 +28,7 @@ public class DoNothing : IInstruction
     public IState Reduce(IState state) => state;
 }
 
-public class AddTreeRow : IInstruction
+public class AddTrees : IInstruction
 {
     public required int[] Trees { get; init; }
 
