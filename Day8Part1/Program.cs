@@ -90,51 +90,42 @@ public class Forest : IState
             Search(highestRowNum, highestColNum, compareRowNum, compareColNum, rowNumDelta, colNumDelta);
         }
 
-        int rowNum = 0;
-        int colNum = 0;
+        const int topEdgeRowNum = 0;
+        const int leftEdgeColNum = 0;
 
-        foreach (var tree in Trees)
+        var bottomEdgeRowNum = length - 1;
+        var rightEdgeColNum = width - 1;
+
+        foreach (var colNum in Enumerable.Range(0, width))
         {
-            if (rowNum == 0)
-            {
-                Console.WriteLine($"   Top Edge: [{rowNum},{colNum}]");
+            // Top Edge
 
-                visibleTreeCoordinates.Add((rowNum, colNum));
+            visibleTreeCoordinates.Add((topEdgeRowNum, colNum));
 
-                Search(rowNum, colNum, rowNum, colNum, +1, 0);
-            }
-            else if (rowNum == length - 1)
-            {
-                Console.WriteLine($"Bottom Edge: [{rowNum},{colNum}]");
+            Search(topEdgeRowNum, colNum, topEdgeRowNum, colNum, +1, 0);
 
-                visibleTreeCoordinates.Add((rowNum, colNum));
 
-                Search(rowNum, colNum, rowNum, colNum, -1, 0);
-            }
-            else if (colNum == 0)
-            {
-                Console.WriteLine($"  Left Edge: [{rowNum},{colNum}]");
+            // Bottom Edge
 
-                visibleTreeCoordinates.Add((rowNum, colNum));
+            Search(bottomEdgeRowNum, colNum, bottomEdgeRowNum, colNum, -1, 0);
 
-                Search(rowNum, colNum, rowNum, colNum, 0, +1);
-            }
-            else if (colNum == width - 1)
-            {
-                Console.WriteLine($" Right Edge: [{rowNum},{colNum}]");
+            visibleTreeCoordinates.Add((bottomEdgeRowNum, colNum));
+        }
 
-                visibleTreeCoordinates.Add((rowNum, colNum));
+        foreach (var rowNum in Enumerable.Range(1, length - 2))
+        {
+            // Left Edge
 
-                Search(rowNum, colNum, rowNum, colNum, 0, -1);
-            }
+            visibleTreeCoordinates.Add((rowNum, leftEdgeColNum));
 
-            colNum += 1;
+            Search(rowNum, leftEdgeColNum, rowNum, leftEdgeColNum, 0, +1);
 
-            if (colNum == width)
-            {
-                colNum = 0;
-                rowNum += 1;
-            }
+
+            // Right Edge
+
+            visibleTreeCoordinates.Add((rowNum, rightEdgeColNum));
+
+            Search(rowNum, rightEdgeColNum, rowNum, rightEdgeColNum, 0, -1);
         }
 
         return visibleTreeCoordinates
