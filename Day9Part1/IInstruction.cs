@@ -15,7 +15,7 @@ public interface IInstruction<TState> : IInstruction
             throw new UnreachableException();
         }
 
-        return state;
+        return Reduce(state);
     }
 
     TState Reduce(TState previousState);
