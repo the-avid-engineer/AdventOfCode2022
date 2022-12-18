@@ -7,8 +7,6 @@
         Func<StreamReader, IInstruction> getNextInstruction
     )
     {
-        var start = DateTime.UtcNow;
-
         using var file = await InputUtility<TProgram>.GetInputStream(day);
         using var fileReader = new StreamReader(file);
 
@@ -20,7 +18,5 @@
         }
 
         Console.WriteLine($"Answer: {state.ToAnswer()}");
-
-        Console.WriteLine($"Time: {DateTime.UtcNow - start}");
     }
 }
