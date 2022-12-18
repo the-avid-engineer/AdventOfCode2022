@@ -13,18 +13,11 @@
 );
 
 //TODO: Define Instructions
-public class InstructionTypeA : IInstruction
+public class InstructionTypeA : IInstruction<StateTypeA>
 {
-    public IState Reduce(IState state)
+    public StateTypeA Reduce(StateTypeA state)
     {
-        switch (state)
-        {
-            case StateTypeA stateTypeA:
-                throw new NotImplementedException();
-
-            default:
-                throw new NotImplementedException();
-        }
+        return state;
     }
 }
 
